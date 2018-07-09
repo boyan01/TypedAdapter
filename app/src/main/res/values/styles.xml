@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Platform.AppCompat.Light">
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.Light.DarkActionBar">
 
 
     </style>
