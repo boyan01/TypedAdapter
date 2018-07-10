@@ -34,7 +34,6 @@ dependencies {
 
     api project(":annotation")
     api 'com.android.support:recyclerview-v7:27.1.1'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
 
     testImplementation 'junit:junit:4.12'
