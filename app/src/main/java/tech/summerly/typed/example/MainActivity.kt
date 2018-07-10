@@ -8,6 +8,7 @@ import tech.summerly.typed.adapter.TypedAdapter
 import tech.summerly.typed.adapter.TypedBinder
 import tech.summerly.typed.adapter.ViewHolder
 import tech.summerly.typed.adapter.annotation.Binder
+import tech.summerly.typed.adapter.annotation.TestCreated
 
 class MainActivity : Activity() {
 
@@ -15,6 +16,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView.adapter = TypedAdapter()
+        TestCreated.test()
     }
 
 
