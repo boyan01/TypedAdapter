@@ -1,5 +1,5 @@
 package tech.summerly.typed.adapter.annotation
 
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.EXPRESSION, AnnotationTarget.CLASS)
 annotation class Binder
