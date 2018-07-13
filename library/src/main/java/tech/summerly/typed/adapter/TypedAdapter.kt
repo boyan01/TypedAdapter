@@ -145,9 +145,9 @@ internal class TypedMapper {
 
     private val map = HashMap<KClass<*>, (Any) -> Any>()
 
-    fun <T : Any, R : Any> register(klass: KClass<T>, mapper: (T) -> R) {
+    fun <T : Any, R : Any> register(cls: KClass<T>, mapper: (T) -> R) {
         @Suppress("UNCHECKED_CAST")
-        map[klass] = mapper as (Any) -> Any
+        map[cls] = mapper as (Any) -> Any
     }
 
     /**
