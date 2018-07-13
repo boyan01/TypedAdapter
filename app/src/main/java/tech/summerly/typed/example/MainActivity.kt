@@ -1,34 +1,36 @@
 package tech.summerly.typed.example
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
-import android.view.ViewGroup
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import tech.summerly.typed.adapter.TypedAdapter
 import tech.summerly.typed.adapter.TypedBinder
 import tech.summerly.typed.adapter.ViewHolder
 import tech.summerly.typed.adapter.annotation.Binder
-import tech.summerly.typed.adapter.annotation.TestCreated
+import tech.summerly.typed.adapter.annotation.TypeLayoutResource
 
 class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        recyclerView.adapter = TypedAdapter()
-        TestCreated.test()
+        val adapter = TypedAdapter()
+        recyclerView.adapter = adapter
+        adapter.withBinder(Unit::class, MyItemViewBinder())
+        adapter.submit((0..100).map { Unit })
     }
 
 
     @Binder
-    class MyItemViewBinder() : TypedBinder<Unit>() {
+    @TypeLayoutResource(android.R.layout.simple_list_item_1)
+    class MyItemViewBinder : TypedBinder<Unit>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
-            return ViewHolder.from(android.R.layout.simple_list_item_1, parent)
-        }
-
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, item: Unit) {
-
+            val text = holder.itemView.findViewById<TextView>(android.R.id.text1)
+            text.text = "test data : ${holder.adapterPosition}"
         }
 
     }
