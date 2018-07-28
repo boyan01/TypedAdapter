@@ -21,13 +21,6 @@ internal class TypedBinderPool {
 
     val typeMapper = TypedMapper()
 
-    /**
-     * when can not directly use typePool.indexOfValue to find the key of class
-     * we need to this class' super class , but the process is expensive
-     * so we need cache the process'result
-     */
-    private val cachedSubClassKey = SparseArrayCompat<KClass<*>>()
-
     private var typeAutoIncrement = START
 
     @Synchronized
@@ -63,18 +56,10 @@ internal class TypedBinderPool {
         }
 
         //if can not find the same class , try to search supper class
-
-        val cachedIndex = cachedSubClassKey.indexOfValue(klass)
-        if (cachedIndex != -1) {
-            return cachedSubClassKey.keyAt(cachedIndex)
-        }
-
         for (i in 0 until typePool.size()) {
             val c = typePool.valueAt(i)
             if (klass.isAssignableFrom(c)) {
-                val key = typePool.keyAt(i)
-                cachedSubClassKey.put(key, c)
-                return key
+                return typePool.keyAt(i)
             }
         }
         throw IllegalAccessError("class :${klass.simpleName} has not register!!")
