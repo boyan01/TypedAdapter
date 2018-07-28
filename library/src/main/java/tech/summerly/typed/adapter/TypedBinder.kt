@@ -8,9 +8,10 @@ import kotlin.reflect.full.findAnnotation
  * bind data to view
  *
  */
-abstract class TypedBinder<T : Any> {
+abstract class TypedBinder<in T : Any> {
 
 
+    /** internal */
     private lateinit var _adapter: TypedAdapter
 
     open fun attachAdapter(adapter: TypedAdapter) {
@@ -43,4 +44,30 @@ abstract class TypedBinder<T : Any> {
 
     abstract fun onBindViewHolder(holder: ViewHolder, item: T)
 
+
+    open fun onBindViewHolder(holder: ViewHolder, item: T, payload: List<Any>) {
+        onBindViewHolder(holder, item)
+    }
+
+
+    /**
+     * @see TypedAdapter.onViewRecycled
+     */
+    open fun onViewRecycled(holder: ViewHolder) {
+
+    }
+
+    /**
+     * @see TypedAdapter.onViewAttachedToWindow
+     */
+    open fun onViewAttachedToWindow(holder: ViewHolder) {
+
+    }
+
+    /**
+     * @see TypedAdapter.onViewDetachedFromWindow
+     */
+    open fun onViewDetachedFromWindow(holder: ViewHolder) {
+
+    }
 }

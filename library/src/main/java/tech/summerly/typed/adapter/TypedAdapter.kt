@@ -1,41 +1,80 @@
 package tech.summerly.typed.adapter
 
-import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import kotlin.reflect.KClass
 
-open class TypedAdapter constructor(list: List<Any>) : RecyclerView.Adapter<ViewHolder>() {
+/**
+ * TypedAdapter
+ *
+ * simple usage:
+ *
+ * 1. create a [TypedBinder] class to bind DATA with VIEW
+ *
+ *    @TypeLayoutResource(android.R.layout.test_list_item)
+ *
+ *    class StringViewBinder : TypedBinder<String>() {
+ *
+ *        override fun onBindViewHolder(holder: ViewHolder, item: String) {
+ *            val textView = holder.itemView.findViewById<TextView>(android.R.id.text1)
+ *            textView.text = item
+ *        }
+ *    }
+ *
+ * 2. assign adapter to [RecyclerView]
+ *    val adapter = TypedAdapter()
+ *    recyclerView.adapter = adapter
+ *
+ * 3. register [TypedBinder] by [withBinder]
+ *    val stringViewBinder = StringViewBinder()
+ *    adapter.withBinder(String::class, stringViewBinder)
+ *
+ * 4. submit data by [submit]
+ *    adapter.submit(arrayListOf("data1", "data2", "data3"))
+ *
+ * if you submit a [Int] value , an Exception will be thrown , because you did'nt register
+ * a bind for [Int].
+ * but you can also use stringViewBinder to handle your [Int] value , by register a bind with a mapper
+ *
+ *    adapter.withBinder(Int::class, stringViewBinder) { i -> "data : $i" }
+ *    adapter.submit((1..100).toList()) // it will handle correctly
+ *
+ *
+ * @author YangBin
+ * @date 2018/7/28
+ */
+open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
 
+    companion object {
 
-    constructor() : this(emptyList())
+        private val DEFAULT_MAPPER = { any: Any -> any }
 
-    private var items: List<Any> = list
+    }
+
+    private var items: List<Any> = emptyList()
 
     private val pool = TypedBinderPool()
 
-    private val mapper = TypedMapper()
-
-    val list: List<Any> get() = items.toList()
-
+    /** register [binder] with [klass] */
     fun <T : Any> withBinder(klass: KClass<T>, binder: TypedBinder<T>): TypedAdapter {
-        pool.register(klass, binder)
-        binder.attachAdapter(this)
-        return this
+        @Suppress("UNCHECKED_CAST")
+        return withBinder(klass, binder, DEFAULT_MAPPER as (T) -> T)
     }
 
     /**
-     * see [withBinder]
      *
-     * @param mapper
+     * register a binder with mapper.
      *
+     * @param klass the class to register a [TypedBinder]
+     * @param binder the binder to bind OBJECT to VIEW ,
+     *        it will use mapped value [R] of [T] to bind data to view
+     * @param mapper map [T] to [R] before [TypedBinder.onBindViewHolder]
      */
     fun <T : Any, R : Any> withBinder(klass: KClass<T>,
                                       binder: TypedBinder<R>,
                                       mapper: (T) -> R): TypedAdapter {
-        this.mapper.register(klass, mapper)
-        @Suppress("UNCHECKED_CAST")
-        return withBinder(klass, binder/*错误的类型转换，但是却没有办法，以后再看看能否优雅一点*/ as TypedBinder<T>)
+        pool.register(klass, binder, mapper)
+        return this
     }
 
     fun setList(list: List<*>, notify: Boolean = true) {
@@ -64,102 +103,48 @@ open class TypedAdapter constructor(list: List<Any>) : RecyclerView.Adapter<View
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        @Suppress("UNCHECKED_CAST")
-        val binder = pool.getBinder(getItemViewType(position)) as TypedBinder<Any>
-        val data = mapper.getMappedObject(items[position])
-        binder.onBindViewHolder(holder, data)
+        val data = pool.typeMapper[items[position]]
+        holder.viewBinder.onBindViewHolder(holder, data)
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        val data = pool.typeMapper[items[position]]
+        holder.viewBinder.onBindViewHolder(holder, data, payloads)
+    }
+
+
+    /** get the copy of [items] */
+    val list: List<Any> get() = items.toList()
+
+    /**
+     *
+     * get the data of [items] by [adapterPosition]
+     *
+     * @param adapterPosition see more [ViewHolder.getAdapterPosition]
+     */
     fun getItem(adapterPosition: Int): Any {
         return items[adapterPosition]
     }
 
-}
 
-//type-binder pool to handle type and binder relationship
-class TypedBinderPool {
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        holder.viewBinder.onViewAttachedToWindow(holder)
+    }
 
-    companion object {
-        private const val START = 0
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        holder.viewBinder.onViewDetachedFromWindow(holder)
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.viewBinder.onViewRecycled(holder)
     }
 
 
-    private val typePool = SparseArrayCompat<KClass<*>>()
-    private val binderPool = SparseArrayCompat<TypedBinder<*>>()
-
-    /**
-     * when can not directly use typePool.indexOfValue to find the key of class
-     * we need to this class' super class , but the process is expensive
-     * so we need cache the process'result
-     */
-    private val cachedSubClassKey = SparseArrayCompat<KClass<*>>()
-
-    private var typeAutoIncrement = START
-
-    @Synchronized
-    fun <T : Any> register(klass: KClass<T>, binder: TypedBinder<T>) {
-        val index = typePool.indexOfValue(klass)
-        if (index > 0) {
-            return
-        }
-        typePool.put(typeAutoIncrement, klass)
-        binderPool.put(typeAutoIncrement, binder)
-        typeAutoIncrement++
-    }
-
-    /**
-     * unique key for this type
-     */
-    fun key(klass: KClass<*>): Int {
-        val index = typePool.indexOfValue(klass)
-        if (index != -1) {
-            return typePool.keyAt(index)
-        }
-
-        //if can not find the same class , try to search supper class
-
-        val cachedIndex = cachedSubClassKey.indexOfValue(klass)
-        if (cachedIndex != -1) {
-            return cachedSubClassKey.keyAt(cachedIndex)
-        }
-
-        for (i in 0 until typePool.size()) {
-            val c = typePool.valueAt(i)
-            if (klass.isAssignableFrom(c)) {
-                val key = typePool.keyAt(i)
-                cachedSubClassKey.put(key, c)
-                return key
-            }
-        }
-        throw IllegalAccessError("class :${klass.simpleName} has not register!!")
-    }
-
-    fun getBinder(key: Int): TypedBinder<*> {
-        return binderPool[key]
-    }
-
-}
-
-
-internal class TypedMapper {
-
-    private val map = HashMap<KClass<*>, (Any) -> Any>()
-
-    fun <T : Any, R : Any> register(cls: KClass<T>, mapper: (T) -> R) {
+    /** shortcut to get binder for ViewHolder */
+    private val ViewHolder.viewBinder: TypedBinder<Any>
         @Suppress("UNCHECKED_CAST")
-        map[cls] = mapper as (Any) -> Any
-    }
-
-    /**
-     * get the object has been mapped
-     */
-    fun getMappedObject(any: Any): Any {
-        //short cuts for empty mapper
-        if (map.isEmpty()) {
-            return any
-        }
-        val mapper = map[any::class] ?: return any
-        return mapper(any)
-    }
+        get() = pool.getBinder(itemViewType) as TypedBinder<Any>
 
 }
+
+
