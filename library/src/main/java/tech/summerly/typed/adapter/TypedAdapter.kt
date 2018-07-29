@@ -51,6 +51,16 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     }
 
+    /**
+     * the [RecyclerView] which this adapter attached
+     *
+     * if adapter do not attached to RecyclerView , a null represent.
+     */
+    var recyclerView: RecyclerView? = null
+        private set(value) {
+            field = value
+        }
+
     private var items: List<Any> = emptyList()
 
     private val pool = TypedBinderPool()
@@ -74,6 +84,7 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
                                       binder: TypedBinder<R>,
                                       mapper: (T) -> R): TypedAdapter {
         pool.register(klass, binder, mapper)
+        binder.attachAdapter(this)
         return this
     }
 
@@ -137,6 +148,14 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onViewRecycled(holder: ViewHolder) {
         holder.viewBinder.onViewRecycled(holder)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = null
     }
 
 

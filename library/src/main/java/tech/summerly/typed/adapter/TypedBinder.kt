@@ -14,12 +14,12 @@ abstract class TypedBinder<in T : Any> {
     /** internal */
     private lateinit var _adapter: TypedAdapter
 
+    /** call when binder attached to adapter */
     open fun attachAdapter(adapter: TypedAdapter) {
         this._adapter = adapter
     }
 
-
-    val adapter get() = _adapter
+    val adapter: TypedAdapter get() = _adapter
 
     /**
      * create a ViewHolder for [TypedAdapter]
