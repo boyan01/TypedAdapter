@@ -17,6 +17,8 @@ class MainActivity : Activity() {
 
         const val NAV_EMPTY = "empty nav"
 
+        const val NAV_SWIPE_REFRESH = "swipe refresh"
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +33,7 @@ class MainActivity : Activity() {
 
         recyclerView.postDelayed({
             // simulate network
-            adapter.submit(arrayListOf(NAV_EMPTY))
+            adapter.submit(arrayListOf(NAV_EMPTY, NAV_SWIPE_REFRESH))
         }, 2000)
 
         adapter.submit(arrayListOf(LoadingItem))
@@ -41,6 +43,9 @@ class MainActivity : Activity() {
         when (str) {
             NAV_EMPTY -> {
                 startActivity(Intent(this, EmptyExampleActivity::class.java))
+            }
+            NAV_SWIPE_REFRESH -> {
+                startActivity(Intent(this, SwipeRefreshActivity::class.java))
             }
         }
 
