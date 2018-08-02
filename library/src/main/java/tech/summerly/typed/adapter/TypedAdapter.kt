@@ -65,25 +65,25 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     private val pool = TypedBinderPool()
 
-    /** register [binder] with [klass] */
-    fun <T : Any> withBinder(klass: KClass<T>, binder: TypedBinder<T>): TypedAdapter {
+    /** register [binder] with [cls] */
+    fun <T : Any> withBinder(cls: KClass<T>, binder: TypedBinder<T>): TypedAdapter {
         @Suppress("UNCHECKED_CAST")
-        return withBinder(klass, binder, DEFAULT_MAPPER as (T) -> T)
+        return withBinder(cls, binder, DEFAULT_MAPPER as (T) -> T)
     }
 
     /**
      *
      * register a binder with mapper.
      *
-     * @param klass the class to register a [TypedBinder]
+     * @param cls the class to register a [TypedBinder]
      * @param binder the binder to bind OBJECT to VIEW ,
      *        it will use mapped value [R] of [T] to bind data to view
      * @param mapper map [T] to [R] before [TypedBinder.onBindViewHolder]
      */
-    fun <T : Any, R : Any> withBinder(klass: KClass<T>,
+    fun <T : Any, R : Any> withBinder(cls: KClass<T>,
                                       binder: TypedBinder<R>,
                                       mapper: (T) -> R): TypedAdapter {
-        pool.register(klass, binder, mapper)
+        pool.register(cls, binder, mapper)
         binder.attachAdapter(this)
         return this
     }
