@@ -88,11 +88,24 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
         return this
     }
 
-    fun <T : Any, R : Any> withBinder1(cls: KClass<T>,
+    fun <T : Any> withBinders(cls: KClass<T>,
+                              binders: List<TypedBinder<T>>,
+                              binderSwitcher: (T) -> Int): TypedAdapter {
+        val binder = SwitchTypedBinder(binders, binderSwitcher)
+        return withBinder(cls, binder)
+    }
+
+    /**
+     * 1 Type -> N Binder
+     *
+     * @param binderSwitcher adapter select the correct Binder by this callback
+
+     */
+    fun <T : Any, R : Any> withBinders(cls: KClass<T>,
                                        binders: List<TypedBinder<R>>,
-                                       binderSwitch: (R) -> Int,
+                                       binderSwitcher: (R) -> Int,
                                        mapper: (T) -> R): TypedAdapter {
-        val binder = SwitchTypedBinder(binders, binderSwitch)
+        val binder = SwitchTypedBinder(binders, binderSwitcher)
         return withBinder(cls, binder, mapper)
     }
 

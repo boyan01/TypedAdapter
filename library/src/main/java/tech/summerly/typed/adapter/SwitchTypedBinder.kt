@@ -2,7 +2,7 @@ package tech.summerly.typed.adapter
 
 import android.view.ViewGroup
 
-class SwitchTypedBinder<T : Any>(
+internal class SwitchTypedBinder<T : Any>(
         internal val binders: List<TypedBinder<T>>,
         val selector: (T) -> Int
 ) : TypedBinder<T>() {
@@ -19,11 +19,11 @@ class SwitchTypedBinder<T : Any>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
-        throw RuntimeException("unImplement")
+        throw RuntimeException("unimplemented")
     }
 
     override fun onBindViewHolder(holder: ViewHolder, item: T) {
-        throw RuntimeException("unImplement")
+        throw RuntimeException("unimplemented")
     }
 
 }

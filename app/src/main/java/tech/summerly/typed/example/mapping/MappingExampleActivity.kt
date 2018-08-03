@@ -13,7 +13,7 @@ class MappingExampleActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recyler_view)
         recyclerView.adapter = TypedAdapter()
-                .withBinder1(
+                .withBinders(
                         String::class,
                         listOf(StringItemBinder1(), StringItemBinder2(), StringItemBinder3()),
                         {
