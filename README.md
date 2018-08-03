@@ -1,0 +1,3 @@
+# TypedAdapter
+
+todo
