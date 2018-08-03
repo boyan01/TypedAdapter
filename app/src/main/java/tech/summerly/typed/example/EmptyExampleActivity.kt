@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.acitivyt_empty_example.*
 import tech.summerly.typed.adapter.TypedAdapter
+import tech.summerly.typed.adapter.plus
 import tech.summerly.typed.example.binder.EmptyItem
 import tech.summerly.typed.example.binder.EmptyItemBinder
 import tech.summerly.typed.example.binder.StringItemBinder

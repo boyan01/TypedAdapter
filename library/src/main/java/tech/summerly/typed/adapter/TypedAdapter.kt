@@ -88,6 +88,15 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
         return this
     }
 
+    fun <T : Any, R : Any> withBinder1(cls: KClass<T>,
+                                       binders: List<TypedBinder<R>>,
+                                       binderSwitch: (R) -> Int,
+                                       mapper: (T) -> R): TypedAdapter {
+        val binder = SwitchTypedBinder(binders, binderSwitch)
+        return withBinder(cls, binder, mapper)
+    }
+
+
     fun setList(list: List<*>, notify: Boolean = true) {
         @Suppress("UNCHECKED_CAST")
         this.items = list as List<Any>
@@ -101,7 +110,11 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
     }
 
     override fun getItemViewType(position: Int): Int {
-        return pool.key(items[position]::class)
+        val obj = items[position]
+        val index = pool.firstBinderForClass(obj::class)
+        val selector = pool.getBinderSelector(index)
+        // default selector result is 0
+        return index + selector(obj)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -114,7 +127,7 @@ open class TypedAdapter : RecyclerView.Adapter<ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = pool.typeMapper[items[position]]
+        val data = pool.typeMapper[getItem(position)]
         holder.viewBinder.onBindViewHolder(holder, data)
     }
 

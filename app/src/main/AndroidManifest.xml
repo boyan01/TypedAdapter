@@ -24,6 +24,9 @@
         <activity
             android:name=".SwipeRefreshActivity"
             android:label="swipe refresh" />
+        <activity
+            android:name=".mapping.MappingExampleActivity"
+            android:label="mapping" />
     </application>
 
 </manifest>
