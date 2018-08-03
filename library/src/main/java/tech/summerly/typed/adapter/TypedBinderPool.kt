@@ -101,7 +101,7 @@ internal class TypedBinderPool {
 
     private fun alreadyRegister(cls: KClass<*>) {
         if (BuildConfig.DEBUG) {
-            throw RuntimeException("class ${cls.qualifiedName} already registered!!")
+            throw IllegalStateException("class ${cls.qualifiedName} already registered!!")
         }
     }
 
