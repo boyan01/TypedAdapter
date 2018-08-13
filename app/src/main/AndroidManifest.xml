@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="tech.summerly.typed.example">
+    package="tech.soit.typed.example">
 
     <application
         android:fullBackupContent="@xml/backup_descriptor"
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name="tech.summerly.typed.example.MainActivity">
+        <activity android:name="tech.soit.typed.example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,13 +19,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EmptyExampleActivity"
+            android:name="tech.soit.typed.example.EmptyExampleActivity"
             android:label="empty" />
         <activity
-            android:name=".SwipeRefreshActivity"
+            android:name="tech.soit.typed.example.SwipeRefreshActivity"
             android:label="swipe refresh" />
         <activity
-            android:name=".mapping.MappingExampleActivity"
+            android:name="tech.soit.typed.example.mapping.MappingExampleActivity"
             android:label="mapping" />
     </application>
 
