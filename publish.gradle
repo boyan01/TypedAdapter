@@ -1,15 +1,14 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
-version '1.0.0'
-group 'com.bintray'
+group = GROUP
+version = VERSION_NAME
 
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/app-release.aar")
-            groupId
-            artifactId 'example'
+            groupId GROUP
+            artifactId POM_ARTIFACT_ID
             version this.version
 
             pom.withXml {
@@ -30,6 +29,33 @@ publishing {
     }
 }
 
+def isAndroidProject = project.plugins.hasPlugin('com.android.application') || project.plugins.hasPlugin('com.android.library')
+
+if (isAndroidProject) {
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from project.android.sourceSets.main.java.source
+    }
+    artifacts {
+        archives androidSourcesJar
+    }
+
+} else if (project.plugins.hasPlugin("java")) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocsJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    artifacts {
+        archives sourcesJar
+        archives javadocsJar
+    }
+}
+
 bintray {
     user = project.hasProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ?: System.getenv('BINTRAY_API_KEY')
@@ -38,18 +64,17 @@ bintray {
     override = true
     pkg {
         repo = 'maven'
-        name = 'example'
-        description = "An example of using the bintray plugin with gradle plugin 3.0.0"
+        name = POM_NAME
+        description = POM_DESCRIPTION
         publish = true
         publicDownloadNumbers = true
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/bintray/gradle-bintray-plugin.git'
+        vcsUrl = 'https://github.com/summerlly/TypedAdapter.git'
         dryRun = true
         version {
-            name = this.version
-            desc = "Example ${this.version}"
+            name = VERSION_NAME
+            desc = "version : $VERSION_NAME"
             released = new Date()
-            vcsTag = this.version
         }
     }
 }

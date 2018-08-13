@@ -1,7 +1,5 @@
 apply plugin: "org.jetbrains.kotlin.jvm"
-
-apply plugin: 'java-library'
-
+apply plugin: 'java'
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
@@ -21,9 +19,10 @@ compileTestKotlin {
     }
 }
 
-
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.android.support:support-annotations:27.1.1"
 }
+
+apply from: "${rootProject.projectDir}/publish.gradle"
