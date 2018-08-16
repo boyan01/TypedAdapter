@@ -4,15 +4,15 @@ apply plugin: 'kotlin-android'
 
 android {
 
-    compileSdkVersion compile_sdk.toInteger()
+    compileSdkVersion compile_sdk
 
     defaultConfig {
         minSdkVersion min_sdk.toInteger()
-        targetSdkVersion compile_sdk.toInteger()
+        targetSdkVersion target_sdk.toInteger()
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -37,12 +37,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     api project(":annotation")
-    api 'com.android.support:recyclerview-v7:27.1.1'
+    api 'androidx.recyclerview:recyclerview:1.0.0-rc01'
 
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
 }
 
 apply from: "${rootProject.projectDir}/publish.gradle"

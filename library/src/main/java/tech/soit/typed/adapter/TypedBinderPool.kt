@@ -2,7 +2,7 @@
 
 package tech.soit.typed.adapter
 
-import android.support.v4.util.SparseArrayCompat
+import androidx.collection.SparseArrayCompat
 import kotlin.reflect.KClass
 
 /**
@@ -66,7 +66,7 @@ internal class TypedBinderPool {
     }
 
     fun getBinder(key: Int): TypedBinder<*> {
-        return binderPool[key]
+        return binderPool[key] ?: error("internal error : get binder error")
     }
 
 

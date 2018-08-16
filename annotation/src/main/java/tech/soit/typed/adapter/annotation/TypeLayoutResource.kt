@@ -1,6 +1,6 @@
 package tech.soit.typed.adapter.annotation
 
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 
 /**
  * An annotation used to indicate what layout id an TypedBinder support

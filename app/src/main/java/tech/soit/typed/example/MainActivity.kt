@@ -3,8 +3,8 @@ package tech.soit.typed.example
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_recyler_view.*
 import tech.soit.typed.adapter.TypedAdapter
 import tech.soit.typed.example.binder.LoadingItem
