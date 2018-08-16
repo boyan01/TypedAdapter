@@ -1,6 +1,7 @@
 package tech.soit.typed.adapter
 
 import android.support.test.runner.AndroidJUnit4
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +19,6 @@ class TypedBinderPoolTest {
 
     @Before
     fun register() {
-        binderPool.register(Binder0())
         binderPool.register(Binder1())
         binderPool.register(Binder2())
         binderPool.register(Binder3())
@@ -34,11 +34,13 @@ class TypedBinderPoolTest {
     @Test(expected = IllegalStateException::class)
     fun testRegisterDuplicate() {
         binderPool.register(Binder0())
+        binderPool.register(Binder0())
     }
 
     @Test
     fun testIndex() {
-
+        val index = binderPool.firstBinderForClass(Class1::class)
+        Assert.assertTrue(index == 0)
     }
 
 

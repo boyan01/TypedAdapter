@@ -13,7 +13,7 @@ internal class TypedBinderPool {
     companion object {
 
         /** the start point to generate ITEM_VIEW_TYPE */
-        private const val START = 1001
+        private const val START = 0
 
     }
 
